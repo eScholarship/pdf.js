@@ -154,7 +154,7 @@ let PDFViewerApplication = {
     renderInteractiveForms: false,
     enablePrintAutoRotate: false,
   },
-  isViewerEmbedded: true, // MH CDL: this was getting false, resulting in initial scroll to top of PDF (bad). Really hard to trace down. //(window.parent !== window),
+  isViewerEmbedded: true, // MH CDL: this was getting false, resulting in initial scroll (via *focus*) to top of PDF (bad). Really hard to trace down. //(window.parent !== window),
   url: '',
   baseUrl: '',
   externalServices: DefaultExternalServices,
