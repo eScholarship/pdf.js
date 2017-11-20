@@ -543,6 +543,7 @@ class BaseViewer {
                            currentPage.width * currentPage.scale;
       let pageHeightScale = (this.container.clientHeight - vPadding) /
                             currentPage.height * currentPage.scale;
+      value = 'page-width'; // MH CDL: Force to always be page width
       switch (value) {
         case 'page-actual':
           scale = 1;
@@ -609,6 +610,7 @@ class BaseViewer {
     if (!this.pdfDocument) {
       return;
     }
+    return; // MH CDL: we never want to scroll the main view
     let pageNumber = params.pageNumber || 0;
     let dest = params.destArray || null;
     let allowNegativeOffset = params.allowNegativeOffset || false;

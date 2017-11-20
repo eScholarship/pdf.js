@@ -22,7 +22,7 @@ const MIN_SCALE = 0.25;
 const MAX_SCALE = 10.0;
 const UNKNOWN_SCALE = 0;
 const MAX_AUTO_SCALE = 1.25;
-const SCROLLBAR_PADDING = 40;
+const SCROLLBAR_PADDING = 3; // MH CDL: reduced (from 40) to make nicer looking slim borders
 const VERTICAL_PADDING = 5;
 
 const PresentationModeState = {

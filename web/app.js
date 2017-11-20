@@ -154,7 +154,7 @@ let PDFViewerApplication = {
     renderInteractiveForms: false,
     enablePrintAutoRotate: false,
   },
-  isViewerEmbedded: (window.parent !== window),
+  isViewerEmbedded: true, // MH CDL: this was getting false, resulting in initial scroll to top of PDF (bad). Really hard to trace down. //(window.parent !== window),
   url: '',
   baseUrl: '',
   externalServices: DefaultExternalServices,
@@ -884,6 +884,8 @@ let PDFViewerApplication = {
 
         this.disableAutoFetchLoadingBarTimeout = setTimeout(() => {
           this.loadingBar.hide();
+          // AM CDL: loadingBar is contained inside toolbarContainer, so that needs to be hidden too
+          document.querySelector('#toolbarContainer').setAttribute('hidden', true);
           this.disableAutoFetchLoadingBarTimeout = null;
         }, DISABLE_AUTO_FETCH_LOADING_BAR_TIMEOUT);
       }
@@ -896,6 +898,8 @@ let PDFViewerApplication = {
     pdfDocument.getDownloadInfo().then(() => {
       this.downloadComplete = true;
       this.loadingBar.hide();
+      // AM CDL: loadingBar is contained inside toolbarContainer, so that needs to be hidden too
+      document.querySelector('#toolbarContainer').setAttribute('hidden', true);
 
       firstPagePromise.then(() => {
         this.eventBus.dispatch('documentload', { source: this, });
@@ -1481,6 +1485,7 @@ function webViewerInitialized() {
     let fileInput = document.createElement('input');
     fileInput.id = appConfig.openFileInputName;
     fileInput.className = 'fileInput';
+    fileInput.style.display = "none"; // MH CDL: Keep ugly file input from cluttering our footer
     fileInput.setAttribute('type', 'file');
     fileInput.oncontextmenu = noContextMenuHandler;
     document.body.appendChild(fileInput);

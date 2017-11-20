@@ -88,7 +88,7 @@ class PDFPageView {
 
     let div = document.createElement('div');
     div.className = 'page';
-    div.style.width = Math.floor(this.viewport.width) + 'px';
+    div.style.width = "auto"; //Math.floor(this.viewport.width) + 'px'; // MH CDL: Avoid initial forcing of page width
     div.style.height = Math.floor(this.viewport.height) + 'px';
     div.setAttribute('data-page-number', this.id);
     this.div = div;
