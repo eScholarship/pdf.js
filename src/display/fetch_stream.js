@@ -113,6 +113,10 @@ class PDFFetchStreamReader {
       this._contentLength = suggestedLength;
       this._isRangeSupported = allowRangeRequests;
 
+      // MH CDL: don't stream if we have ranges
+      if (allowRangeRequests)
+        this._isStreamingSupported = false;
+
       // We need to stop reading when range is supported and streaming is
       // disabled.
       if (!this._isStreamingSupported && this._isRangeSupported) {

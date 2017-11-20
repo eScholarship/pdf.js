@@ -31,7 +31,7 @@ import globalScope from '../shared/global_scope';
 import { Metadata } from './metadata';
 import { PDFDataTransportStream } from './transport_stream';
 
-var DEFAULT_RANGE_CHUNK_SIZE = 65536; // 2^16 = 65536
+var DEFAULT_RANGE_CHUNK_SIZE = 262144; // 2^18 = 262144 // MH CDL
 
 var isWorkerDisabled = false;
 var workerSrc;
