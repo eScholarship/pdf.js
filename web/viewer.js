@@ -56,7 +56,7 @@ if (typeof PDFJSDev !== 'undefined' && PDFJSDev.test('CHROME || GENERIC')) {
 
 function getViewerConfiguration() {
   return {
-    appContainer: document.body,
+    appContainer: document.getElementById('pdfjs_cdl_wrapper'), // MH CDL
     mainContainer: document.getElementById('viewerContainer'),
     viewerContainer: document.getElementById('viewer'),
     eventBus: null, // using global event bus with DOM events
@@ -167,7 +167,7 @@ function getViewerConfiguration() {
     printContainer: document.getElementById('printContainer'),
     openFileInputName: 'fileInput',
     debuggerScriptPath: './debugger.js',
-    defaultUrl: DEFAULT_URL,
+    defaultUrl: window.DEFAULT_URL,  // MH CDL: take it from a place we can actually touch
   };
 }
 

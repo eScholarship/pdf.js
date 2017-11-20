@@ -49,6 +49,13 @@ const DISABLE_AUTO_FETCH_LOADING_BAR_TIMEOUT = 5000;
 
 function configure(PDFJS) {
   PDFJS.imageResourcesPath = './images/';
+
+  // MH CDL: Begin specific paths for embedded viewer
+  PDFJS.imageResourcesPath = '/bower_components/pdfjs-embed/images';
+  PDFJS.workerSrc = '/bower_components/pdfjs-embed/js/pdf.worker.js';
+  return
+  // MH CDL: end specific paths
+
   if (typeof PDFJSDev !== 'undefined' &&
       PDFJSDev.test('FIREFOX || MOZCENTRAL || GENERIC || CHROME')) {
     PDFJS.workerSrc = '../build/pdf.worker.js';
@@ -1419,7 +1426,8 @@ if (typeof PDFJSDev === 'undefined' || PDFJSDev.test('GENERIC')) {
       // start accepting URLs from foreign origin -- CORS headers on the remote
       // server must be properly configured.
       if (fileOrigin !== viewerOrigin) {
-        throw new Error('file origin does not match viewer\'s');
+        // MH CDL: We have set up CORS, so don't throw an error here.
+        //NO: throw new Error('file origin does not match viewer\'s');
       }
     } catch (ex) {
       let message = ex && ex.message;

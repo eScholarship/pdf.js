@@ -1236,6 +1236,7 @@ function wrapReason(reason) {
 }
 
 function makeReasonSerializable(reason) {
+  console.log("Internal pdf.js exception:", reason) // MH CDL
   if (!(reason instanceof Error) ||
       reason instanceof AbortException ||
       reason instanceof MissingPDFException ||
