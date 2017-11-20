@@ -122,7 +122,8 @@ class BaseViewer {
       this.renderingQueue = options.renderingQueue;
     }
 
-    this.scroll = watchScroll(this.container, this._scrollUpdate.bind(this));
+    // MH CDL: in embedded mode, must watch scroll events on `window` instead of `this.container`
+    this.scroll = watchScroll(window, this._scrollUpdate.bind(this));
     this.presentationModeState = PresentationModeState.UNKNOWN;
     this._resetView();
 

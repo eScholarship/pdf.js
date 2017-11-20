@@ -320,10 +320,14 @@ function getVisibleElements(scrollEl, views, sortByVisibility = false) {
   let top = scrollEl.scrollTop, bottom = top + scrollEl.clientHeight;
   let left = scrollEl.scrollLeft, right = left + scrollEl.clientWidth;
 
+  // MH CDL:
+  function getAbsLeft(el) { return el.getBoundingClientRect().left + window.scrollX }
+  function getAbsTop(el) { return el.getBoundingClientRect().top + window.scrollY }
+  function getAbsBottom(el) { return el.getBoundingClientRect().bottom + window.scrollY }
+
   function isElementBottomBelowViewTop(view) {
     let element = view.div;
-    let elementBottom =
-      element.offsetTop + element.clientTop + element.clientHeight;
+    let elementBottom = getAbsBottom(element); // MH CDL
     return elementBottom > top;
   }
 
@@ -336,14 +340,14 @@ function getVisibleElements(scrollEl, views, sortByVisibility = false) {
   for (let i = firstVisibleElementInd, ii = views.length; i < ii; i++) {
     view = views[i];
     element = view.div;
-    currentHeight = element.offsetTop + element.clientTop;
+    currentHeight = getAbsTop(element); // MH CDL
     viewHeight = element.clientHeight;
 
     if (currentHeight > bottom) {
       break;
     }
 
-    currentWidth = element.offsetLeft + element.clientLeft;
+    currentWidth = getAbsLeft(element) // MH CDL
     viewWidth = element.clientWidth;
     if (currentWidth + viewWidth < left || currentWidth > right) {
       continue;
