@@ -29,7 +29,8 @@ class PDFViewer extends BaseViewer {
   _getVisiblePages() {
     if (!this.isInPresentationMode) {
       // MH CDL: In embedded mode, check visibility against the scrollable page (root HTML), rather than just `this.container`
-      return getVisibleElements(document.getElementsByTagName("html")[0], this._pages, true);
+      let container = document.documentElement.scrollTop ? document.documentElement : document.body
+      return getVisibleElements(container, this._pages, true);
     }
     // The algorithm in getVisibleElements doesn't work in all browsers and
     // configurations when presentation mode is active.
