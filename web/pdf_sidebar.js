@@ -227,6 +227,7 @@ class PDFSidebar {
     if (this.isOpen) {
       return;
     }
+    return; // MH CDL: disallow automatic sidebar open in embedded mode
     this.isOpen = true;
     this.toggleButton.classList.add('toggled');
 

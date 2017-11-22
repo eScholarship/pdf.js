@@ -492,7 +492,17 @@ class BaseViewer {
   _setScaleUpdatePages(newScale, newValue, noScroll = false, preset = false) {
     this._currentScaleValue = newValue.toString();
 
-    if (isSameScale(this._currentScale, newScale)) {
+    // MH CDL: In embedded mode, each page may have its own scale. We can't optimize by
+    //         checking a single value; instead, we check if they're all the same.
+    let allSame = true;
+    for (let i = 0, ii = this._pages.length; i < ii; i++) {
+      let pageScale = newScale * this.getPageWidth(this._pages[0]) / this.getPageWidth(this._pages[i]);
+      if (!isSameScale(this._pages[i].scale, pageScale)) {
+        allSame = false;
+        break;
+      }
+    }
+    if (allSame) {
       if (preset) {
         this._setScaleDispatchEvent(newScale, newValue, true);
       }
@@ -500,7 +510,9 @@ class BaseViewer {
     }
 
     for (let i = 0, ii = this._pages.length; i < ii; i++) {
-      this._pages[i].update(newScale);
+      // MH CDL: Special scale calclation, to make each page fit the width of the viewer
+      let pageScale = newScale * this.getPageWidth(this._pages[0]) / this.getPageWidth(this._pages[i]);
+      this._pages[i].update(pageScale);
     }
     this._currentScale = newScale;
 
@@ -526,13 +538,18 @@ class BaseViewer {
     }
   }
 
+  getPageWidth(page) {
+    let vp = page.viewport.clone({ scale: CSS_UNITS })
+    return vp.width
+  }
+
   _setScale(value, noScroll = false) {
     let scale = parseFloat(value);
 
     if (scale > 0) {
       this._setScaleUpdatePages(scale, value, noScroll, /* preset = */ false);
     } else {
-      let currentPage = this._pages[this._currentPageNumber - 1];
+      let currentPage = this._pages[0]; // MH CDL: always use pg 1 as the basis, for consistent scaling
       if (!currentPage) {
         return;
       }
@@ -540,8 +557,8 @@ class BaseViewer {
         0 : SCROLLBAR_PADDING;
       let vPadding = (this.isInPresentationMode || this.removePageBorders) ?
         0 : VERTICAL_PADDING;
-      let pageWidthScale = (this.container.clientWidth - hPadding) /
-                           currentPage.width * currentPage.scale;
+      let pageWidthScale = (window.get_pdfjs_width() - hPadding) / // MH CDL: special width calc...
+                           this.getPageWidth(currentPage)          // MH CDL: ...in embedded mode
       let pageHeightScale = (this.container.clientHeight - vPadding) /
                             currentPage.height * currentPage.scale;
       value = 'page-width'; // MH CDL: Force to always be page width
