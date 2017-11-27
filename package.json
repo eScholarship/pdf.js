@@ -1,6 +1,7 @@
 {
   "name": "pdf.js",
-  "version": "1.0.0",
+  "version": "v1.10.88_CDL1",
+  "main": "index.js",
   "devDependencies": {
     "acorn": "^5.1.2",
     "babel-core": "^6.26.0",
