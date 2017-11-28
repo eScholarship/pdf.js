@@ -1,6 +1,6 @@
 {
   "name": "pdfjs-embed2",
-  "version": "v1.10.88_CDL1",
+  "version": "v1.10.99_CDL2",
   "main": "index.js",
   "devDependencies": {
     "acorn": "^5.1.2",

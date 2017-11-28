@@ -1,7 +1,11 @@
-# PDF.js
+# PDFJS-embed
 
 **Note**: This git repo is CDL's fork of PDF.js, containing modifications to make it embed
 smoothly on the escholarship.org site.
+
+How to build: `./build.sh`
+
+# PDF.js
 
 PDF.js is a Portable Document Format (PDF) viewer that is built with HTML5.
 
