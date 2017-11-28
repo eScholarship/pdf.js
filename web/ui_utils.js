@@ -321,9 +321,19 @@ function getVisibleElements(scrollEl, views, sortByVisibility = false) {
   let left = scrollEl.scrollLeft, right = left + scrollEl.clientWidth;
 
   // MH CDL:
-  function getAbsLeft(el) { return el.getBoundingClientRect().left + window.scrollX }
-  function getAbsTop(el) { return el.getBoundingClientRect().top + window.scrollY }
-  function getAbsBottom(el) { return el.getBoundingClientRect().bottom + window.scrollY }
+  let scrollX = 0
+  let scrollY = 0
+  if (!(window.pageXOffset === undefined)) {
+    scrollX = window.pageXOffset
+    scrollY = window.pageYOffset
+  }
+  else if (!(window.scrollX === undefined)) {
+    scrollX = window.scrollX
+    scrollY = window.scrollY
+  }
+  function getAbsLeft(el) { return el.getBoundingClientRect().left + scrollX }
+  function getAbsTop(el) { return el.getBoundingClientRect().top + scrollY }
+  function getAbsBottom(el) { return el.getBoundingClientRect().bottom + scrollY }
 
   function isElementBottomBelowViewTop(view) {
     let element = view.div;

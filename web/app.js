@@ -2054,10 +2054,7 @@ function webViewerKeyDown(evt) {
   if (PDFViewerApplication.overlayManager.active) {
     return;
   }
-  // MH CDL: do not intercept keys in embedded mode
-  if (this.isViewerEmbedded) {
-    return;
-  }
+  return; // MH CDL: don't do any keystroke processing in embedded mode.
   let handled = false, ensureViewerFocused = false;
   let cmd = (evt.ctrlKey ? 1 : 0) |
             (evt.altKey ? 2 : 0) |
