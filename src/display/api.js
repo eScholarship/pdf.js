@@ -1278,21 +1278,21 @@ var PDFWorker = (function PDFWorkerClosure() {
           fakeWorkerFilesLoadedCapability.resolve(WorkerMessageHandler);
         });
       } else if (typeof require === 'function') {
-        require.ensure(['../core/worker.js'], function() { // MH CDL: need to put worker in separate bundle
-          var worker = require('../core/worker.js');
-          WorkerMessageHandler = worker.WorkerMessageHandler;
-          fakeWorkerFilesLoadedCapability.resolve(WorkerMessageHandler);
-        }, "pdfjs-worker"); // MH CDL: and give worker bundle a name
+        /* MH CDL: avoid worker in main bundle
+        var worker = require('../core/worker.js');
+        WorkerMessageHandler = worker.WorkerMessageHandler;
+        fakeWorkerFilesLoadedCapability.resolve(WorkerMessageHandler);
+        */
       } else {
         throw new Error(
           'SystemJS or CommonJS must be used to load fake worker.');
       }
     } else if (PDFJSDev.test('SINGLE_FILE')) {
-        require.ensure(['../core/worker.js'], function() { // MH CDL: need to put worker in separate bundle
-          var pdfjsCoreWorker = require('../core/worker.js');
-          WorkerMessageHandler = pdfjsCoreWorker.WorkerMessageHandler;
-          fakeWorkerFilesLoadedCapability.resolve(WorkerMessageHandler);
-        }, "pdfjs-worker"); // MH CDL: and give worker bundle a name
+      /* MH CDL: avoid worker in main bundle
+      var pdfjsCoreWorker = require('../core/worker.js');
+      WorkerMessageHandler = pdfjsCoreWorker.WorkerMessageHandler;
+      fakeWorkerFilesLoadedCapability.resolve(WorkerMessageHandler);
+      */
     } else {
       var loader = fakeWorkerFilesLoader || function (callback) {
         Util.loadScript(getWorkerSrc(), function () {

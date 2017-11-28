@@ -5,7 +5,7 @@ window.SystemJS = {
   }
 }
 
-let versionInfo = require('./build/version.json')
+let versionInfo = require('./dist/version.json')
 
 window.PDFJSDev = {
   test: function(str) {

@@ -1,5 +1,5 @@
 {
-  "name": "pdf.js",
+  "name": "pdfjs-embed2",
   "version": "v1.10.88_CDL1",
   "main": "index.js",
   "devDependencies": {
