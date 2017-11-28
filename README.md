@@ -3,7 +3,11 @@
 **Note**: This git repo is CDL's fork of PDF.js, containing modifications to make it embed
 smoothly on the escholarship.org site.
 
-How to build: `./build.sh`
+How to build:
++ `./cdl-build.sh`
++ `git add dist`
++ UPDATE version number in package.json!
++ commit, etc.
 
 # PDF.js
 
