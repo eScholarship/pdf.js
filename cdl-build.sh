@@ -3,10 +3,10 @@
 set -e
 
 echo "Installing/updating packages."
-#yarn
+yarn
 
 echo "Building minified worker."
-#gulp minified
+gulp minified
 
 echo "Copying files."
 rm -rf dist

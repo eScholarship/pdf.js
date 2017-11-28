@@ -51,8 +51,8 @@ function configure(PDFJS) {
   PDFJS.imageResourcesPath = './images/';
 
   // MH CDL: Begin specific paths for embedded viewer
-  PDFJS.imageResourcesPath = '/bower_components/pdfjs-embed2/web/images';
-  PDFJS.workerSrc = '/bower_components/pdfjs-embed2/dist/pdf.worker.1.10-88-CDL1.min.js';
+  PDFJS.imageResourcesPath = '/node_modules/pdfjs-embed2/web/images';
+  PDFJS.workerSrc = '/node_modules/pdfjs-embed2/dist/pdf.worker-' + PDFJSDev.eval('BUNDLE_VERSION') + '-min.js';
   return;
   // MH CDL: end specific paths
 
