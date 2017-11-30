@@ -188,9 +188,21 @@ function webViewerLoad() {
   }
 }
 
+// MH CDL: need to load (and unload) based on when component is mounted/unmounted.
+/* commenting out from here...
 if (document.readyState === 'interactive' ||
     document.readyState === 'complete') {
   webViewerLoad();
 } else {
   document.addEventListener('DOMContentLoaded', webViewerLoad, true);
+}
+...to here */
+
+window.webViewerLoad = webViewerLoad;
+window.webViewerUnload = function() {
+  console.log("in unload")
+  if (window.PDFViewerApplication) {
+    console.log("doing close")
+    window.PDFViewerApplication.close();
+  }
 }
