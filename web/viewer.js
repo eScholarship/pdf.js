@@ -200,9 +200,7 @@ if (document.readyState === 'interactive' ||
 
 window.webViewerLoad = webViewerLoad;
 window.webViewerUnload = function() {
-  console.log("in unload")
   if (window.PDFViewerApplication) {
-    console.log("doing close")
     window.PDFViewerApplication.close();
   }
 }
