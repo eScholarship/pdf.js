@@ -613,6 +613,7 @@ class BaseViewer {
    *   array, in the format: <page-ref> </XYZ|/FitXXX> <args..>
    * @property {boolean} allowNegativeOffset - (optional) Allow negative page
    *   offsets. The default value is `false`.
+   * @property {boolean} paging     // AM CDL: true if 'page=x' is included in the URL fragment
    */
 
   /**
@@ -628,7 +629,11 @@ class BaseViewer {
     if (!this.pdfDocument) {
       return;
     }
-    return; // MH CDL: we never want to scroll the main view
+    // AM CDL: In embedded mode, scroll the main view only when 'page=x' is inluded in URL fragment
+    if (!params.paging) return;
+    // AM CDL TODO: Remove this log stmnt
+    console.log("PAGING ON. scrollPageIntoView params.pageNumber = ", params.pageNumber)
+
     let pageNumber = params.pageNumber || 0;
     let dest = params.destArray || null;
     let allowNegativeOffset = params.allowNegativeOffset || false;

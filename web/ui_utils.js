@@ -166,7 +166,11 @@ function scrollIntoView(element, spot, skipOverflowHiddenElements = false) {
     offsetX += parent.offsetLeft;
     parent = parent.offsetParent;
     if (!parent) {
-      return; // no need to scroll
+      // AM CDL: This function scrollIntoView is only used when a parameter 
+      // 'page=x' is included in the URL fragment ... in pdf.js terms that means
+      // pdfLinkService.setHash was triggered with a bookmark
+      window.scroll(0, offsetY);  // AM CDL: This is my addition
+      return;
     }
   }
   if (spot) {

@@ -189,8 +189,9 @@ class PDFLinkService {
 
   /**
    * @param {string} hash
+   * @param {boolean} paging // AM CDL: Is 'page=x' is included in the URL fragment?
    */
-  setHash(hash) {
+  setHash(hash, paging) {
     let pageNumber, dest;
     if (hash.indexOf('=') >= 0) {
       let params = parseQueryString(hash);
@@ -206,6 +207,8 @@ class PDFLinkService {
         this.navigateTo(params.nameddest);
         return;
       }
+      // AM CDL TODO: Remove this log stmnt
+      console.log("PdfLinkService.sethash params.page = " + params.page)
       if ('page' in params) {
         pageNumber = (params.page | 0) || 1;
       }
@@ -245,10 +248,13 @@ class PDFLinkService {
         }
       }
       if (dest) {
+        // AM CDL TODO: Remove this log stmnt
+        console.log("...setHash, params.page = " + params.page + ";   paging = " + paging)
         this.pdfViewer.scrollPageIntoView({
           pageNumber: pageNumber || this.page,
           destArray: dest,
           allowNegativeOffset: true,
+          paging: paging,  // AM CDL
         });
       } else if (pageNumber) {
         this.page = pageNumber; // simple page

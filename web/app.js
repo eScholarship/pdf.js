@@ -1166,17 +1166,18 @@ let PDFViewerApplication = {
     };
     this.isInitialViewSet = true;
     this.pdfSidebar.setInitialView(sidebarView);
-
+    // AM CDL TODO: Remove this log stmnt
+    console.log("this.initialBookmark = " + this.initialBookmark);
     if (this.initialBookmark) {
       setRotation(this.initialRotation);
       delete this.initialRotation;
 
-      this.pdfLinkService.setHash(this.initialBookmark);
+      this.pdfLinkService.setHash(this.initialBookmark, /* paging= */true);
       this.initialBookmark = null;
     } else if (storedHash) {
       setRotation(rotation);
 
-      this.pdfLinkService.setHash(storedHash);
+      this.pdfLinkService.setHash(storedHash, /* paging= */false);
     }
 
     // Ensure that the correct page number is displayed in the UI,
