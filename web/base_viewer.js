@@ -472,6 +472,16 @@ class BaseViewer {
     if (this.pagesCount === 0) {
       return;
     }
+    /* AM CDL: In the case a jschol user clicks 'page=' (TOC) and then scrolls a bit, 
+     * clicking to go back to same page won't work unless URL hash shows a change.
+     * Solution: Strip off hash once user starts scrolling
+     * This doesn't cause a problem with any other kind of hash (i.e. 'article_')
+     * because those are rendering components using jschol's ScrollingAnchorComp.
+     */  
+    if (window.location.hash.startsWith('#page=')) {
+      history.pushState("", document.title, 
+        window.location.pathname + window.location.search);
+    }
     this.update();
   }
 
@@ -631,9 +641,6 @@ class BaseViewer {
     }
     // AM CDL: In embedded mode, scroll the main view only when 'page=x' is inluded in URL fragment
     if (!params.paging) return;
-    // AM CDL TODO: Remove this log stmnt
-    console.log("PAGING ON. scrollPageIntoView params.pageNumber = ", params.pageNumber)
-
     let pageNumber = params.pageNumber || 0;
     let dest = params.destArray || null;
     let allowNegativeOffset = params.allowNegativeOffset || false;

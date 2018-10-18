@@ -207,8 +207,6 @@ class PDFLinkService {
         this.navigateTo(params.nameddest);
         return;
       }
-      // AM CDL TODO: Remove this log stmnt
-      console.log("PdfLinkService.sethash params.page = " + params.page)
       if ('page' in params) {
         pageNumber = (params.page | 0) || 1;
       }
@@ -248,8 +246,6 @@ class PDFLinkService {
         }
       }
       if (dest) {
-        // AM CDL TODO: Remove this log stmnt
-        console.log("...setHash, params.page = " + params.page + ";   paging = " + paging)
         this.pdfViewer.scrollPageIntoView({
           pageNumber: pageNumber || this.page,
           destArray: dest,
