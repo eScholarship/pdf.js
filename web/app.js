@@ -1166,13 +1166,17 @@ let PDFViewerApplication = {
     };
     this.isInitialViewSet = true;
     this.pdfSidebar.setInitialView(sidebarView);
-    // AM CDL TODO: Remove this log stmnt
-    console.log("this.initialBookmark = " + this.initialBookmark);
+
     if (this.initialBookmark) {
       setRotation(this.initialRotation);
       delete this.initialRotation;
 
-      this.pdfLinkService.setHash(this.initialBookmark, /* paging= */true);
+      /* AM CDL: Strange case if clicking to a 'page=' (TOC) element in jschol from a tab
+       * seperate from main (the Metrics tab for instance), the page tends to not scroll 
+       * to the proper point at the beginning of the page element. This setTimeout fixes that.
+       */
+      let bkmk = this.initialBookmark;
+      setTimeout(() => { this.pdfLinkService.setHash(bkmk, /* paging= */true); }, 0);
       this.initialBookmark = null;
     } else if (storedHash) {
       setRotation(rotation);
