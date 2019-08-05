@@ -3,10 +3,10 @@
 set -e
 
 echo "Installing/updating packages."
-yarn
+npm install
 
 echo "Building minified worker."
-gulp minified
+./node_modules/.bin/gulp minified
 
 echo "Copying files."
 rm -rf dist
