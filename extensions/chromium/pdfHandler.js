@@ -13,7 +13,6 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-/* import-globals-from feature-detect.js */
 /* import-globals-from preserve-referer.js */
 
 'use strict';
@@ -30,7 +29,7 @@ function getViewerURL(pdf_url) {
  * @return {boolean} True if the PDF file should be downloaded.
  */
 function isPdfDownloadable(details) {
-  if (details.url.indexOf('pdfjs.action=download') >= 0) {
+  if (details.url.includes('pdfjs.action=download')) {
     return true;
   }
   // Display the PDF viewer regardless of the Content-Disposition header if the
@@ -40,8 +39,7 @@ function isPdfDownloadable(details) {
   // viewer to open the PDF, but first check whether the Content-Disposition
   // header specifies an attachment. This allows sites like Google Drive to
   // operate correctly (#6106).
-  if (details.type === 'main_frame' &&
-      details.url.indexOf('=download') === -1) {
+  if (details.type === 'main_frame' && !details.url.includes('=download')) {
     return false;
   }
   var cdHeader = (details.responseHeaders &&
@@ -61,6 +59,7 @@ function getHeaderFromHeaders(headers, headerName) {
       return header;
     }
   }
+  return undefined;
 }
 
 /**
@@ -88,6 +87,7 @@ function isPdfFile(details) {
       }
     }
   }
+  return false;
 }
 
 /**
@@ -110,16 +110,17 @@ function getHeadersWithContentDispositionAttachment(details) {
     cdHeader.value = 'attachment' + cdHeader.value.replace(/^[^;]+/i, '');
     return { responseHeaders: headers, };
   }
+  return undefined;
 }
 
 chrome.webRequest.onHeadersReceived.addListener(
   function(details) {
     if (details.method !== 'GET') {
       // Don't intercept POST requests until http://crbug.com/104058 is fixed.
-      return;
+      return undefined;
     }
     if (!isPdfFile(details)) {
-      return;
+      return undefined;
     }
     if (isPdfDownloadable(details)) {
       // Force download by ensuring that Content-Disposition: attachment is set
@@ -131,21 +132,7 @@ chrome.webRequest.onHeadersReceived.addListener(
     // Implemented in preserve-referer.js
     saveReferer(details);
 
-    // Replace frame with viewer
-    if (Features.webRequestRedirectUrl) {
-      return { redirectUrl: viewerUrl, };
-    }
-    // Aww.. redirectUrl is not yet supported, so we have to use a different
-    // method as fallback (Chromium <35).
-
-    if (details.frameId === 0) {
-      // Main frame. Just replace the tab and be done!
-      chrome.tabs.update(details.tabId, {
-        url: viewerUrl,
-      });
-      return { cancel: true, };
-    }
-    console.warn('Child frames are not supported in ancient Chrome builds!');
+    return { redirectUrl: viewerUrl, };
   },
   {
     urls: [
@@ -156,35 +143,11 @@ chrome.webRequest.onHeadersReceived.addListener(
   ['blocking', 'responseHeaders']);
 
 chrome.webRequest.onBeforeRequest.addListener(
-  function onBeforeRequestForFTP(details) {
-    if (!Features.extensionSupportsFTP) {
-      chrome.webRequest.onBeforeRequest.removeListener(onBeforeRequestForFTP);
-      return;
-    }
-    if (isPdfDownloadable(details)) {
-      return;
-    }
-    var viewerUrl = getViewerURL(details.url);
-    return { redirectUrl: viewerUrl, };
-  },
-  {
-    urls: [
-      'ftp://*/*.pdf',
-      'ftp://*/*.PDF'
-    ],
-    types: ['main_frame', 'sub_frame'],
-  },
-  ['blocking']);
-
-chrome.webRequest.onBeforeRequest.addListener(
   function(details) {
     if (isPdfDownloadable(details)) {
-      return;
+      return undefined;
     }
 
-    // NOTE: The manifest file has declared an empty content script
-    // at file://*/* to make sure that the viewer can load the PDF file
-    // through XMLHttpRequest. Necessary to deal with http://crbug.com/302548
     var viewerUrl = getViewerURL(details.url);
 
     return { redirectUrl: viewerUrl, };
@@ -192,7 +155,17 @@ chrome.webRequest.onBeforeRequest.addListener(
   {
     urls: [
       'file://*/*.pdf',
-      'file://*/*.PDF'
+      'file://*/*.PDF',
+      ...(
+        // Duck-typing: MediaError.prototype.message was added in Chrome 59.
+        MediaError.prototype.hasOwnProperty('message') ? [] :
+        [
+          // Note: Chrome 59 has disabled ftp resource loading by default:
+          // https://www.chromestatus.com/feature/5709390967472128
+          'ftp://*/*.pdf',
+          'ftp://*/*.PDF',
+        ]
+      ),
     ],
     types: ['main_frame', 'sub_frame'],
   },
@@ -230,7 +203,7 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
     // sensitive (local) file in a frame.
     if (!sender.tab) {
       sendResponse('');
-      return;
+      return undefined;
     }
     // TODO: This should be the URL of the parent frame, not the tab. But
     // chrome-extension:-URLs are not visible in the webNavigation API
@@ -239,11 +212,11 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
     var parentUrl = sender.tab.url;
     if (!parentUrl) {
       sendResponse('');
-      return;
+      return undefined;
     }
     if (parentUrl.lastIndexOf('file:', 0) === 0) {
       sendResponse('file://');
-      return;
+      return undefined;
     }
     // The regexp should always match for valid URLs, but in case it doesn't,
     // just give the full URL (e.g. data URLs).
@@ -270,4 +243,12 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
       });
     }
   }
+  return undefined;
 });
+
+// Remove keys from storage that were once part of the deleted feature-detect.js
+chrome.storage.local.remove([
+  'featureDetectLastUA',
+  'webRequestRedirectUrl',
+  'extensionSupportsFTP',
+]);
