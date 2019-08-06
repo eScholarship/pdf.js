@@ -32,7 +32,7 @@ window.PDFJSDev = {
         "pdfBugEnabled": false,
         "disableRange": false,
         "disableStream": false,
-        "disableAutoFetch": false, // to avoid giant PDFs eating all memory
+        "disableAutoFetch": true, // MH CDL: avoid giant PDFs eating all memory
         "disableFontFace": false,
         "disableTextLayer": false,
         "useOnlyCssZoom": false,
