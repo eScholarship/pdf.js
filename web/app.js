@@ -1529,7 +1529,9 @@ function loadFakeWorker() {
         }).catch(reject);
       } else if (typeof require === 'function') {
         try {
+          /* MH CDL: avoid worker in main bundle
           window.pdfjsWorker = require('../src/core/worker.js');
+          */
           resolve();
         } catch (ex) {
           reject(ex);
