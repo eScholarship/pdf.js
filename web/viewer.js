@@ -202,6 +202,13 @@ function webViewerLoad() {
       pdfjsWebAppOptions.AppOptions.set('defaultUrl', defaultUrl);
     }
 
+    // MH CDL: Set specific options for our embedded version
+    pdfjsWebAppOptions.AppOptions.set('imageResourcesPath', './images/');
+    pdfjsWebAppOptions.AppOptions.set('workerSrc', '/node_modules/pdfjs-embed2/dist/pdf.worker-' + PDFJSDev.eval('BUNDLE_VERSION') + '-min.js');
+    pdfjsWebAppOptions.AppOptions.set('defaultUrl', window.DEFAULT_URL);
+    pdfjsWebAppOptions.AppOptions.set('cMapUrl', '/node_modules/pdfjs-embed2/external/bcmaps/');
+    pdfjsWebAppOptions.AppOptions.set('disableAutoFetch', true);
+
     window.PDFViewerApplication = pdfjsWebApp.PDFViewerApplication;
     window.PDFViewerApplicationOptions = pdfjsWebAppOptions.AppOptions;
 

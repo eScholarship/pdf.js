@@ -119,10 +119,10 @@ class PDFPageView {
 
     let totalRotation = (this.rotation + this.pdfPageRotate) % 360;
     // MH CDL: Dont' blow out page width on page load. From here...
-    let rotatedViewport = pdfPage.getViewport(this.scale * CSS_UNITS, totalRotation);
+    let rotatedViewport = pdfPage.getViewport({ scale: this.scale * CSS_UNITS, rotation: totalRotation });
     let clampedScale = this.scale * CSS_UNITS * this.viewport.width / rotatedViewport.width;
-    this.viewport = pdfPage.getViewport(clampedScale, // MH CDL:  ...to here.
-                                        totalRotation);
+    this.viewport = pdfPage.getViewport({ scale: clampedScale, // MH CDL:  ...to here.
+                                          rotation: totalRotation });
     this.stats = pdfPage.stats;
     this.reset();
   }
