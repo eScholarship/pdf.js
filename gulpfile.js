@@ -475,6 +475,9 @@ gulp.task('buildnumber', function (done) {
       console.log('This is not a Git repository; using default build number.');
     }
 
+    // MH CDL: Fix the build number at the PDF-JS version
+    buildNumber = 228 // and be sure to update this when upgrading to new pdf.js from upstream
+
     console.log('Extension build number: ' + buildNumber);
 
     var version = config.versionPrefix + buildNumber;
