@@ -133,7 +133,7 @@ let PDFViewerApplication = {
   l10n: null,
   isInitialViewSet: false,
   downloadComplete: false,
-  isViewerEmbedded: true, // MH CDL: this was getting false, resulting in initial scroll (via *focus*) to top of PDF (bad). Really hard to trace down. //(window.parent !== window),
+  isViewerEmbedded: false,
   url: '',
   baseUrl: '',
   externalServices: DefaultExternalServices,
@@ -563,7 +563,7 @@ let PDFViewerApplication = {
       // Embedded PDF viewers should not be changing their parent page's title.
       return;
     }
-    document.title = title;
+    //document.title = title; // MH CDL: also our viewer
   },
 
   /**
@@ -991,7 +991,7 @@ let PDFViewerApplication = {
         // Make all navigation keys work on document load,
         // unless the viewer is embedded in a web page.
         if (!this.isViewerEmbedded) {
-          pdfViewer.focus();
+          // pdfViewer.focus(); // MH CDL: This caused an initial scroll, and was *very* hard to find
         }
 
         // For documents with different page sizes, once all pages are resolved,

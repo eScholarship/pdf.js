@@ -684,7 +684,6 @@ class BaseViewer {
     if (!this.pdfDocument) {
       return;
     }
-    return; // MH CDL: we never want to scroll the main view
     const pageView = (Number.isInteger(pageNumber) &&
                       this._pages[pageNumber - 1]);
     if (!pageView) {

@@ -135,6 +135,12 @@ function scrollIntoView(element, spot, skipOverflowHiddenElements = false) {
     }
     offsetY += parent.offsetTop;
     offsetX += parent.offsetLeft;
+    // MH CDL: This was not getting out of body to where we scroll in embedded mode (the documentElement)
+    //         so let's fix that.
+    if (!parent.offsetParent && parent === document.body && document.documentElement.scrollTop) {
+      parent = document.documentElement
+      continue
+    }
     parent = parent.offsetParent;
     if (!parent) {
       return; // no need to scroll
