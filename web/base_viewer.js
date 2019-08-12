@@ -905,8 +905,9 @@ class BaseViewer {
   }
 
   _getVisiblePages() {
-    // MH CDL: In embedded mode, check visibility against the scrollable page (root HTML), rather than just `this.container`
-    let container = document.documentElement.scrollTop ? document.documentElement : document.body
+    // MH CDL: In embedded mode, check visibility against the scrollable page (root HTML), rather than just `this.container`.
+    // (minor note: check below was previously sans 'typeof' and failed when scrollTop == 0)
+    let container = (typeof document.documentElement.scrollTop !== 'undefined') ? document.documentElement : document.body
     return getVisibleElements(container, this._pages, true,
                               this._isScrollModeHorizontal);
   }
