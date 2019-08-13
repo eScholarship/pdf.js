@@ -135,15 +135,11 @@ function scrollIntoView(element, spot, skipOverflowHiddenElements = false) {
     }
     offsetY += parent.offsetTop;
     offsetX += parent.offsetLeft;
-    // MH CDL: This was not getting out of body to where we scroll in embedded mode (the documentElement)
-    //         so let's fix that.
-    if (!parent.offsetParent && parent === document.body && document.documentElement.scrollTop) {
-      parent = document.documentElement
-      continue
-    }
     parent = parent.offsetParent;
     if (!parent) {
-      return; // no need to scroll
+      // MH CDL: This was not getting out of body to where we scroll in embedded mode (the documentElement)
+      //         so let's fix that.
+      break;
     }
   }
   if (spot) {
@@ -152,10 +148,13 @@ function scrollIntoView(element, spot, skipOverflowHiddenElements = false) {
     }
     if (spot.left !== undefined) {
       offsetX += spot.left;
-      parent.scrollLeft = offsetX;
+      //parent.scrollLeft = offsetX; // MH CDL: don't do horz scrolling
     }
   }
-  parent.scrollTop = offsetY;
+  // MH CDL: Apply scrolling to the whole page in our special embedded mode. Need to do both
+  // documentElement and body. Chrome + FF seem to use the former, Safari the latter.
+  document.documentElement.scrollTop = offsetY;
+  document.body.scrollTop = offsetY;
 }
 
 /**
@@ -433,8 +432,10 @@ function backtrackBeforeAllVisibleElements(index, views, top) {
  */
 function getVisibleElements(scrollEl, views, sortByVisibility = false,
                             horizontal = false) {
-  const top = scrollEl.scrollTop, bottom = top + scrollEl.clientHeight;
-  const left = scrollEl.scrollLeft, right = left + scrollEl.clientWidth;
+  // MH CDL: In our special embedded use case, we need to add the viewer container's page position
+  const br = document.getElementById("viewerContainer").getBoundingClientRect()
+  const top = -br.y, bottom = top + scrollEl.clientHeight;
+  const left = -br.x, right = left + scrollEl.clientWidth;
 
   // Throughout this "generic" function, comments will assume we're working with
   // PDF document pages, which is the most important and complex case. In this
