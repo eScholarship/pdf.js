@@ -130,12 +130,6 @@ class PDFThumbnailView {
     div.setAttribute('data-page-number', this.id);
     this.div = div;
 
-    if (id === 1) {
-      // Highlight the thumbnail of the first page when no page number is
-      // specified (or exists in cache) when the document is loaded.
-      div.classList.add('selected');
-    }
-
     let ring = document.createElement('div');
     ring.className = 'thumbnailSelectionRing';
     let borderAdjustment = 2 * THUMBNAIL_CANVAS_BORDER_WIDTH;
@@ -152,12 +146,13 @@ class PDFThumbnailView {
     this.pdfPage = pdfPage;
     this.pdfPageRotate = pdfPage.rotate;
     let totalRotation = (this.rotation + this.pdfPageRotate) % 360;
-    this.viewport = pdfPage.getViewport(1, totalRotation);
+    this.viewport = pdfPage.getViewport({ scale: 1, rotation: totalRotation, });
     this.reset();
   }
 
   reset() {
     this.cancelRendering();
+    this.renderingState = RenderingStates.INITIAL;
 
     this.pageWidth = this.viewport.width;
     this.pageHeight = this.viewport.height;
@@ -201,12 +196,15 @@ class PDFThumbnailView {
     this.reset();
   }
 
+  /**
+   * PLEASE NOTE: Most likely you want to use the `this.reset()` method,
+   *              rather than calling this one directly.
+   */
   cancelRendering() {
     if (this.renderTask) {
       this.renderTask.cancel();
       this.renderTask = null;
     }
-    this.renderingState = RenderingStates.INITIAL;
     this.resume = null;
   }
 
@@ -303,9 +301,7 @@ class PDFThumbnailView {
         this.renderTask = null;
       }
 
-      if (((typeof PDFJSDev === 'undefined' ||
-            !PDFJSDev.test('PDFJS_NEXT')) && error === 'cancelled') ||
-          error instanceof RenderingCancelledException) {
+      if (error instanceof RenderingCancelledException) {
         renderCapability.resolve(undefined);
         return;
       }

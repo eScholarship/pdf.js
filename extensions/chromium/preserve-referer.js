@@ -41,14 +41,26 @@ var g_requestHeaders = {};
 // g_referrers[tabId][frameId] = referrer of PDF frame.
 var g_referrers = {};
 
+var extraInfoSpecWithHeaders; // = ['requestHeaders', 'extraHeaders']
+
 (function() {
   var requestFilter = {
     urls: ['*://*/*'],
     types: ['main_frame', 'sub_frame'],
   };
-  chrome.webRequest.onSendHeaders.addListener(function(details) {
-    g_requestHeaders[details.requestId] = details.requestHeaders;
-  }, requestFilter, ['requestHeaders']);
+  function registerListener(extraInfoSpec) {
+    extraInfoSpecWithHeaders = extraInfoSpec;
+    // May throw if the given extraInfoSpec is unsupported.
+    chrome.webRequest.onSendHeaders.addListener(function(details) {
+      g_requestHeaders[details.requestId] = details.requestHeaders;
+    }, requestFilter, extraInfoSpec);
+  }
+  try {
+    registerListener(['requestHeaders', 'extraHeaders']);
+  } catch (e) {
+    // "extraHeaders" is not supported in Chrome 71 and earlier.
+    registerListener(['requestHeaders']);
+  }
   chrome.webRequest.onBeforeRedirect.addListener(forgetHeaders, requestFilter);
   chrome.webRequest.onCompleted.addListener(forgetHeaders, requestFilter);
   chrome.webRequest.onErrorOccurred.addListener(forgetHeaders, requestFilter);
@@ -105,7 +117,7 @@ chrome.runtime.onConnect.addListener(function onReceivePort(port) {
         urls: [data.requestUrl],
         types: ['xmlhttprequest'],
         tabId: tabId,
-      }, ['blocking', 'requestHeaders']);
+      }, ['blocking', ...extraInfoSpecWithHeaders]);
     }
     // Acknowledge the message, and include the latest referer for this frame.
     port.postMessage(referer);
@@ -117,11 +129,20 @@ chrome.runtime.onConnect.addListener(function onReceivePort(port) {
       delete g_referrers[tabId][frameId];
     }
     chrome.webRequest.onBeforeSendHeaders.removeListener(onBeforeSendHeaders);
+    chrome.webRequest.onHeadersReceived.removeListener(exposeOnHeadersReceived);
   });
+
+  // Expose some response headers for fetch API calls from PDF.js;
+  // This is a work-around for https://crbug.com/784528
+  chrome.webRequest.onHeadersReceived.addListener(exposeOnHeadersReceived, {
+    urls: ['https://*/*'],
+    types: ['xmlhttprequest'],
+    tabId: tabId,
+  }, ['blocking', 'responseHeaders']);
 
   function onBeforeSendHeaders(details) {
     if (details.frameId !== frameId) {
-      return;
+      return undefined;
     }
     var headers = details.requestHeaders;
     var refererHeader = getHeaderFromHeaders(headers, 'referer');
@@ -132,9 +153,27 @@ chrome.runtime.onConnect.addListener(function onReceivePort(port) {
         refererHeader.value.lastIndexOf('chrome-extension:', 0) !== 0) {
       // Sanity check. If the referer is set, and the value is not the URL of
       // this extension, then the request was not initiated by this extension.
-      return;
+      return undefined;
     }
     refererHeader.value = referer;
     return { requestHeaders: headers, };
+  }
+
+  function exposeOnHeadersReceived(details) {
+    if (details.frameId !== frameId) {
+      return undefined;
+    }
+    var headers = details.responseHeaders;
+    var aceh = getHeaderFromHeaders(headers, 'access-control-expose-headers');
+    // List of headers that PDF.js uses in src/display/network_utils.js
+    var acehValue =
+      'accept-ranges,content-encoding,content-length,content-disposition';
+    if (aceh) {
+      aceh.value += ',' + acehValue;
+    } else {
+      aceh = { name: 'Access-Control-Expose-Headers', value: acehValue, };
+      headers.push(aceh);
+    }
+    return { responseHeaders: headers, };
   }
 });
