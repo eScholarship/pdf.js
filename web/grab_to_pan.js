@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/* eslint-disable no-var */
 
 /**
  * Construct a GrabToPan instance for a given HTML element.
@@ -220,6 +221,7 @@ function isLeftMouseReleased(event) {
     // Safari 6.0+
     return event.which === 0;
   }
+  return false;
 }
 
 export {

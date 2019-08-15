@@ -20,7 +20,8 @@ window.PDFJSDev = {
       return null // not 'undefined'
   },
   json: function(str) {
-    if (str == "$ROOT/web/default_preferences.json")
+    // MH CDL: Had to add second clause here to avoid a log msg
+    if (str == "$ROOT/web/default_preferences.json" || str == "$ROOT/build/default_preferences.json")
       return {
         "showPreviousViewOnLoad": true,
         "defaultZoomValue": "",
@@ -31,7 +32,7 @@ window.PDFJSDev = {
         "pdfBugEnabled": false,
         "disableRange": false,
         "disableStream": false,
-        "disableAutoFetch": false, // to avoid giant PDFs eating all memory
+        "disableAutoFetch": true, // MH CDL: avoid giant PDFs eating all memory
         "disableFontFace": false,
         "disableTextLayer": false,
         "useOnlyCssZoom": false,

@@ -1,12 +1,15 @@
 #!/usr/bin/env bash
 
+# This script builds a new version of the 'worker' in the dist/ directory.
+# Only needed when doing a major upgrade.
+
 set -e
 
 echo "Installing/updating packages."
-yarn
+npm install
 
 echo "Building minified worker."
-gulp minified
+./node_modules/.bin/gulp minified
 
 echo "Copying files."
 rm -rf dist
