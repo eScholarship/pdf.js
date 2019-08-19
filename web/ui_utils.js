@@ -434,8 +434,8 @@ function getVisibleElements(scrollEl, views, sortByVisibility = false,
                             horizontal = false) {
   // MH CDL: In our special embedded use case, we need to add the viewer container's page position
   const br = document.getElementById("viewerContainer").getBoundingClientRect()
-  const top = -br.y, bottom = top + scrollEl.clientHeight;
-  const left = -br.x, right = left + scrollEl.clientWidth;
+  const top = -(br.y || br.top), bottom = top + scrollEl.clientHeight;  // 'y' for Chrome/FF, 'top' for Edge
+  const left = -(br.x || br.left), right = left + scrollEl.clientWidth; // 'x' for Chrome/FF, 'left' for Edge
 
   // Throughout this "generic" function, comments will assume we're working with
   // PDF document pages, which is the most important and complex case. In this

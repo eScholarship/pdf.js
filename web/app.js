@@ -1871,7 +1871,15 @@ function webViewerSpreadModeChanged(evt) {
   }
 }
 
+var prevWidth;
+
 function webViewerResize() {
+
+  // MH CDL: On MS Edge, getting spurious resize events every time a page loads.
+  if (prevWidth == window.get_pdfjs_width())
+    return;
+  prevWidth = window.get_pdfjs_width();
+
   let { pdfDocument, pdfViewer, } = PDFViewerApplication;
   if (!pdfDocument) {
     return;
