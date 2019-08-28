@@ -1105,11 +1105,13 @@ let PDFViewerApplication = {
       this.contentDispositionFilename = contentDispositionFilename;
 
       // Provides some basic debug information
+      /* MH CDL: don't want non-debug output in a production app. From here...
       console.log('PDF ' + pdfDocument.fingerprint + ' [' +
                   info.PDFFormatVersion + ' ' + (info.Producer || '-').trim() +
                   ' / ' + (info.Creator || '-').trim() + ']' +
                   ' (PDF.js: ' + (version || '-') +
                   (AppOptions.get('enableWebGL') ? ' [WebGL]' : '') + ')');
+      ...to here */
 
       let pdfTitle;
       if (metadata && metadata.has('dc:title')) {
@@ -1228,12 +1230,12 @@ let PDFViewerApplication = {
        * to the proper point at the beginning of the page element. This setTimeout fixes that.
        */
       let bkmk = this.initialBookmark;
-      setTimeout(() => { this.pdfLinkService.setHash(bkmk, /* paging= */true); }, 0);
+      setTimeout(() => { this.pdfLinkService.setHash(bkmk); }, 0);
       this.initialBookmark = null;
     } else if (storedHash) {
       setRotation(rotation);
 
-      this.pdfLinkService.setHash(storedHash, /* paging= */false);
+      this.pdfLinkService.setHash(storedHash);
     }
 
     // Ensure that the correct page number is displayed in the UI,
@@ -1245,7 +1247,7 @@ let PDFViewerApplication = {
     if (!this.pdfViewer.currentScaleValue) {
       // Scale was not initialized: invalid bookmark or scale was not specified.
       // Setting the default one.
-      this.pdfViewer.currentScaleValue = DEFAULT_SCALE_VALUE;
+      this.pdfViewer._setScale(DEFAULT_SCALE_VALUE, true); // MH CDL: true = do not scroll on init!
     }
   },
 

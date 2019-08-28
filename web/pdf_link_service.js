@@ -197,9 +197,8 @@ class PDFLinkService {
 
   /**
    * @param {string} hash
-   * @param {boolean} paging // AM CDL: Is 'page=x' is included in the URL fragment?
    */
-  setHash(hash, paging) {
+  setHash(hash) {
     let pageNumber, dest;
     if (hash.includes('=')) {
       let params = parseQueryString(hash);
@@ -257,8 +256,7 @@ class PDFLinkService {
         this.pdfViewer.scrollPageIntoView({
           pageNumber: pageNumber || this.page,
           destArray: dest,
-          allowNegativeOffset: true,
-          paging: paging,  // AM CDL
+          allowNegativeOffset: true
         });
       } else if (pageNumber) {
         this.page = pageNumber; // simple page

@@ -302,7 +302,11 @@ class PDFHistory {
     if (this._updateUrl && destination && destination.hash) {
       const baseUrl = document.location.href.split('#')[0];
       if (!baseUrl.startsWith('file://')) { // Prevent errors in Firefox.
-        newUrl = `${baseUrl}#${destination.hash}`;
+        const oldHash = document.location.href.split('#')[1];
+        if (/^page=/.test(oldHash)) { // MH CDL: only update URL if already scrolled to a particular page
+          const newHash = destination.hash.replace(/&.*/, ''); // MH CDL: just page num, get rid of coords
+          newUrl = (newHash == "page=1") ? baseUrl : `${baseUrl}#${newHash}`; // page=1 is the default anyhow
+        }
       }
     }
     if (shouldReplace) {

@@ -532,16 +532,6 @@ class BaseViewer {
     if (this.pagesCount === 0) {
       return;
     }
-    /* AM CDL: In the case a jschol user clicks 'page=' (TOC) and then scrolls a bit, 
-     * clicking to go back to same page won't work unless URL hash shows a change.
-     * Solution: Strip off hash once user starts scrolling
-     * This doesn't cause a problem with any other kind of hash (i.e. 'article_')
-     * because those are rendering components using jschol's ScrollingAnchorComp.
-     */  
-    if (window.location.hash.startsWith('#page=')) {
-      history.pushState("", document.title, 
-        window.location.pathname + window.location.search);
-    }
     this.update();
   }
 
@@ -683,7 +673,6 @@ class BaseViewer {
    *   array, in the format: <page-ref> </XYZ|/FitXXX> <args..>
    * @property {boolean} allowNegativeOffset - (optional) Allow negative page
    *   offsets. The default value is `false`.
-   * @property {boolean} paging     // AM CDL: true if 'page=x' is included in the URL fragment
    */
 
   /**

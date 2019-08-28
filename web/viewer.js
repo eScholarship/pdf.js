@@ -207,6 +207,7 @@ function webViewerLoad() {
     pdfjsWebAppOptions.AppOptions.set('workerSrc', '/node_modules/pdfjs-embed2/dist/pdf.worker-2.2.228-min.js');
     pdfjsWebAppOptions.AppOptions.set('defaultUrl', window.DEFAULT_URL);
     pdfjsWebAppOptions.AppOptions.set('cMapUrl', '/node_modules/pdfjs-embed2/external/bcmaps/');
+    pdfjsWebAppOptions.AppOptions.set('historyUpdateUrl', true);
 
     window.PDFViewerApplication = pdfjsWebApp.PDFViewerApplication;
     window.PDFViewerApplicationOptions = pdfjsWebAppOptions.AppOptions;
