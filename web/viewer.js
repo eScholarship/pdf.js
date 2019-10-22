@@ -208,6 +208,7 @@ function webViewerLoad() {
     pdfjsWebAppOptions.AppOptions.set('defaultUrl', window.DEFAULT_URL);
     pdfjsWebAppOptions.AppOptions.set('cMapUrl', '/node_modules/pdfjs-embed2/external/bcmaps/');
     pdfjsWebAppOptions.AppOptions.set('historyUpdateUrl', true);
+    pdfjsWebAppOptions.AppOptions.set('eventBusDispatchToDOM', true); // 'Hypothesis' annotator needs this
 
     window.PDFViewerApplication = pdfjsWebApp.PDFViewerApplication;
     window.PDFViewerApplicationOptions = pdfjsWebAppOptions.AppOptions;

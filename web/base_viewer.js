@@ -174,7 +174,75 @@ class BaseViewer {
     return this._pages.length;
   }
 
+  // BEGIN MH-CDL HYPOTHESIS ANCHORING HACK
+  // Hypothesis needs all pages loaded in order to anchor its annotations. Generally
+  // in the embedded viewer we avoid loading all pages to save on memory and bandwidth,
+  // however if we detect Hypothesis anchoring things, there's no choice.
+  preloadAllPages() {
+    console.log("Hypothesis anchoring detected. Preloading all pages.")
+    let getPagesLeft = this.pagesCount;
+    for (let pageNum = 1; pageNum <= this.pagesCount; ++pageNum) {
+      this.pdfDocument.getPage(pageNum).then((pdfPage) => {
+        let pageView = this._pages[pageNum - 1];
+        if (!pageView.pdfPage) {
+          pageView.setPdfPage(pdfPage);
+        }
+        this.linkService.cachePageRef(pageNum, pdfPage.ref);
+        let pagesCount = this.pagesCount
+        if (--getPagesLeft === 0) {
+          console.log("All pages loaded, sending event to resume anchoring.")
+          let event = document.createEvent('CustomEvent')
+          event.initCustomEvent("pagesloaded", true, true, { source: this, pagesCount })
+          document.dispatchEvent(event)
+        }
+      }, (reason) => {
+        console.error(`Unable to get page ${pageNum} to initialize viewer`,
+                      reason);
+      });
+    }
+  }
+
+  prevStackStr = "";
+  preloadTriggered = false;
+
+  maybeTriggerPreload(index) {
+    // Grab a stack trace. Yes, it's not entirely portable but it's the only option so far.
+    try {
+      throw new Error("foo");
+    }
+    catch (e) {
+      try {
+        // Stack traces look different in different browsers. E.g. Safari only gives 4 levels.
+        // However, it suffices to check if we get called from two different places within
+        // Hypothesis. If only 1, it means Hypothesis isn't actually anchoring any annotations.
+        // But if they call from 2 or more places, they're anchoring annotations.
+        let stackStr = "" + e.stack
+        if (stackStr.indexOf("annotator") >= 0) {
+          //console.log("Annotator stack: " + stackStr)
+          if (stackStr != this.prevStackStr) {
+            let pv = this._pages[index]
+            if (pv && !pv.pdfPage && !this.preloadTriggered) {
+              if (!this._pageViewsReady) {
+                console.log("Would trigger preloadAll, but main load still not done?")
+              }
+              else {
+                setTimeout(()=>this.preloadAllPages(), 0)
+                this.preloadTriggered = true
+              }
+            }
+          }
+          this.prevStackStr = stackStr
+        }
+      }
+      catch (e2) {
+        console.log("mayTriggerPreload: error in stack processing:", e2)
+      }
+    }
+  }
+
   getPageView(index) {
+    this.maybeTriggerPreload(index)
+    // END MH-CDL HYPOTHESIS ANCHORING HACK
     return this._pages[index];
   }
 
